@@ -4,6 +4,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import org.aguzman.apiservlet.webapp.headers.services.LoginService;
+import org.aguzman.apiservlet.webapp.headers.services.LoginServiceCookieImpl;
 import org.aguzman.apiservlet.webapp.headers.services.LoginServiceSessionImpl;
 
 import java.io.IOException;

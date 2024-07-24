@@ -3,18 +3,16 @@ package org.aguzman.apiservlet.webapp.headers.controllers;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import org.aguzman.apiservlet.webapp.headers.services.LoginService;
-import org.aguzman.apiservlet.webapp.headers.services.LoginServiceCookieImpl;
-import org.aguzman.apiservlet.webapp.headers.services.LoginServiceSessionImpl;
+import org.aguzman.apiservlet.webapp.headers.models.Usuario;
+import org.aguzman.apiservlet.webapp.headers.services.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
 import java.util.Optional;
 
 @WebServlet({"/login", "/login.html"})
 public class LoginServlet extends HttpServlet {
-    final static String USERNAME = "admin";
-    final static String PASSWORD = "12345";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -33,12 +31,13 @@ public class LoginServlet extends HttpServlet {
                 out.println("    </head>");
                 out.println("    <body>");
                 out.println("        <h1>Hola " + usernameOptional.get() + " has iniciado sesión con éxito!</h1>");
-                out.println("<p><a href='" + req.getContextPath() + "/index.html'>volver</a></p>");
+                out.println("<p><a href='" + req.getContextPath() + "/index.jsp'>volver</a></p>");
                 out.println("<p><a href='" + req.getContextPath() + "/logout'>cerrar sesión</a></p>");
                 out.println("    </body>");
                 out.println("</html>");
             }
         } else {
+            req.setAttribute("title", req.getAttribute("title") + ": Login");
             getServletContext().getRequestDispatcher("/login.jsp").forward(req, resp);
         }
     }
@@ -48,7 +47,9 @@ public class LoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        if (USERNAME.equals(username) && PASSWORD.equals(password)) {
+        UsuarioService service = new UsuarioServiceImpl((Connection) req.getAttribute("conn"));
+        Optional<Usuario> usuarioOptional = service.login(username, password);
+        if (usuarioOptional.isPresent()) {
 
             HttpSession session = req.getSession();
             session.setAttribute("username", username);
